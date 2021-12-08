@@ -12,7 +12,7 @@ int main(){
     float m[CARRERAS][LEN], mAux[CARRERAS][LEN], mAux2[CARRERAS][LEN];
     float *velocidad, *velocidaddef, *tiempo, *vDef, *tiempodef;
     float *posicion, *posiciondef, *posDef;
-    float masa, deformacion, tiempofinal, constante, steerangle, radio, vinicial;
+    float masa, deformacion, tiempofinal, constante, steerangle, radio, vinicial, suma;
     float sumatorio = 0, sumatoriocurva = 0, sumatoriolateral = 0, cte1, cte2;
     int tvuelta;
     //Pido el número de vueltas:
@@ -34,9 +34,6 @@ int main(){
     posicion = (float*)malloc(tvuelta*sizeof(float));
     posiciondef = (float*)malloc(tvuelta*sizeof(float));
     posDef = (float*)malloc(tvuelta*sizeof(float));
-    //Pido el tiempo final:
-    printf("Escribe el tiempo que llevas en el stint: ");
-    scanf("%f", &tiempofinal);
     printf("Escribe la velocidad en t=%d: ", 0);
     scanf("%f", &velocidad[0]);
             for(j=1; j<=tvuelta; j++){
@@ -59,11 +56,11 @@ int main(){
                 calcularInversa2x2(m, mAux, mAux2);
                 vDef[j-1] = mAux2[j-1][j-1]*velocidaddef[j-1]+mAux2[j-1][j]*velocidaddef[j];
                 vDef[j] = mAux2[j][j-1]*velocidaddef[j-1]+mAux2[j][j]*velocidaddef[j];
-                sumatorio = sumatorio + vDef[j-1]-vDef[j] + velocidad[j];
-                //Me aseguro de sumar todas las aceleraciones, independientemente del sentido en el que vayan.
-                if (sumatorio < 0){
-                    sumatorio = sumatorio*(-1);
+                suma = vDef[j-1]+vDef[j]+velocidad[j];
+                if (suma < 0){
+                    suma = suma*(-1);
                 }
+                sumatorio = sumatorio + suma;
                 //Calculo la aceleración:
                 printf("Sumatorio de la aceleracion longitudinal acumulada: %f\n", sumatorio);
                 //Pido la masa:
@@ -73,9 +70,9 @@ int main(){
                 printf("Escribe la deformacion del neumatico que lleva (de 0 a 1): ");
                 scanf("%f", &deformacion);
                 //Calculo la constante:
-                constante = masa*sumatorio/(tiempofinal*deformacion);
+                constante = masa*sumatorio/(deformacion);
                 //Muestro la fórmula
-                printf("La formula es deformacion = %f*t\n", 1/constante);
+                printf("La formula es deformacion = %.25f*t\n", 1/constante);
             }
             else {//Si estoy en curva:
                 //Pido la posición en el tiempo:
@@ -119,7 +116,7 @@ int main(){
                 cte1 = sumatoriocurva/(radio*deformacion);
                 cte2 = sumatoriolateral/(radio*deformacion);
                 //Pido la deformación:
-                printf("La formula es deformacion = %f*t + %f*t^2\n", 1/cte1, 1/cte2);
+                printf("La formula es deformacion = %.25f*t + %.25f*t^2\n", 1/cte1, 1/cte2);
             }
         }
 }

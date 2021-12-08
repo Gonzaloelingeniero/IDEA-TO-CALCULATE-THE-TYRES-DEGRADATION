@@ -32,9 +32,6 @@ int main(){
     posicion = (float*)malloc(tvuelta*sizeof(float));
     posiciondef = (float*)malloc(tvuelta*sizeof(float));
     posDef = (float*)malloc(tvuelta*sizeof(float));
-    //Pido el tiempo final:
-    printf("Escribe el tiempo que llevas en el stint: ");
-    scanf("%f", &tiempofinal);
     //Pido la velocidad en cada tiempo:
     printf("Escribe la velocidad en t=%d: ", 0);
     scanf("%f", &velocidad[0]);
@@ -49,17 +46,20 @@ int main(){
                 //Relleno la matriz con el tiempo:
                 m[0][0] = 0.001;
                 m[0][1] = 1/0.001;
-                m[1][0] = vueltas*tvuelta+(int)tiempofinal%(int)tvuelta+1;
-                m[1][1] = 1/(vueltas*tvuelta+(int)tiempofinal%(int)tvuelta);
+                m[1][0] = vueltas*tvuelta+j;
+                m[1][1] = 1/(vueltas*tvuelta+j);
                 //Calculo el término independiente:
-                velocidaddef[j-1] = velocidad[j-1] + velocidad[j-1]*(vueltas*tvuelta+(int)tiempofinal%(int)tvuelta-1);
-                velocidaddef[j] = velocidad[j] + velocidad[j-1]*(vueltas*tvuelta+(int)tiempofinal%(int)tvuelta);
+                velocidaddef[j-1] = velocidad[j-1] + velocidad[j-1]*(vueltas*tvuelta+j);
+                velocidaddef[j] = velocidad[j] + velocidad[j-1]*(vueltas*tvuelta+j);
                 //Calculo la solución:
                 calcularInversa2x2(m, mAux, mAux2);
                 vDef[j-1]=mAux2[j-1][j-1]*velocidaddef[j-1]+mAux2[j-1][j]*velocidaddef[j];
                 vDef[j]=mAux2[j][j-1]*velocidaddef[j-1]+mAux2[j][j]*velocidaddef[j];
+                if(vDef[j-1] < 0){
+                    vDef[j-1] = vDef[j-1]*(-1);
+                }
                 //Calculo la aceleración:
-                printf("Integral de la aceleracion longitudinal acumulada en valor absoluto: %f*t+%f/t^2+%f\n",
+                printf("Integral de la aceleracion longitudinal acumulada en valor absoluto: %f*t-%f/t^2+%f\n",
                        vDef[j-1], vDef[j], velocidad[j-1]);
                 //Pido la masa:
                 printf("Escribe la masa del coche en este momento: ");
@@ -68,9 +68,9 @@ int main(){
                 printf("Escribe la deformacion que lleva el neumatico (de 0 a 1): ");
                 scanf("%f", &deformacion);
                 //Calculo la constante:
-                constante = masa*(vDef[j-1]*(tiempofinal)+vDef[j]/((tiempofinal)*(tiempofinal)))/(deformacion);
+                constante = masa*(vDef[j-1]*(j)+vDef[j]/((vueltas*tvuelta+j)*(vueltas*tvuelta+j)))/(deformacion);
                 //Muestro la fórmula
-                printf("La formula es deformacion = %f*t+%f/t^2+%f\n",
+                printf("La formula es deformacion = %.25f*t+%.25f/t^2+%.25f\n",
                        vDef[j-1]/constante, vDef[j]/constante, velocidad[j-1]/constante);
                 }
             else {//Si estoy en curva:
@@ -82,11 +82,11 @@ int main(){
                 //Relleno la matriz con el tiempo:
                 m[0][0] = 0.001;
                 m[0][1] = 1;
-                m[1][0] = (int)tiempofinal%(int)tvuelta+vinicial*tvuelta;
+                m[1][0] = j+vinicial*tvuelta;
                 m[1][1] = 1;
                 //Calculo el término independiente:
-                posiciondef[j-1] = posicion[j-1] + vinicial*(vueltas*tvuelta+(int)tiempofinal%(int)tvuelta);
-                posiciondef[j] = posicion[j] + vinicial*(vueltas*tvuelta+(int)tiempofinal%(int)tvuelta);
+                posiciondef[j-1] = posicion[j-1] + vinicial*(vueltas*tvuelta+j);
+                posiciondef[j] = posicion[j] + vinicial*(vueltas*tvuelta+j);
                 //Calculo la solución:
                 calcularInversa2x2(m, mAux, mAux2);
                 posDef[j-1]=mAux2[j-1][j-1]*posiciondef[j-1]+mAux2[j-1][j]*posiciondef[j];
@@ -108,10 +108,10 @@ int main(){
                 printf("Escribe la deformacion del neumatico que lleva (de 0 a 1): ");
                 scanf("%f", &deformacion);
                 //Pido la constante:
-                constante = pow((masa*(posDef[j-1]*pow((vueltas*tvuelta+(int)tiempofinal%(int)tvuelta), 2))
-                                 +posDef[j]-vinicial*(vueltas*tvuelta+(int)tiempofinal%(int)tvuelta)), 2)/(radio*deformacion);
+                constante = pow(masa*(posDef[j-1]*pow((vueltas*tvuelta+j), 2))
+                                 +posDef[j]-vinicial*(vueltas*tvuelta+(j)), 2)/(radio*deformacion);
                 //Pido la deformación:
-                printf("La formula es deformacion = %f*t^4+%f*t^2+%f*t^3+%f+%f*t^2+%f*t^2+%f*t+%f*t^2\n+%f*t+%f\n",
+                printf("La formula es deformacion = %.25f*t^4+%.25f*t^2+%.25f*t^3+%.25f+%.25f*t^2+%.25f*t^2+%.25f*t+%f.25*t^2\n+%f.25*t+%f.25\n",
                        (posDef[j-1]*posDef[j-1]/radio ,posDef[j-1]*2*posDef[j]/radio, posDef[j-1]*vinicial, posDef[j]*posDef[j],
                         posDef[j]*vinicial, posDef[j-1]*vinicial, posDef[j]*vinicial, vinicial*vinicial, posDef[j-1]+2*posDef[j-1])/constante,
                        vinicial/constante);
