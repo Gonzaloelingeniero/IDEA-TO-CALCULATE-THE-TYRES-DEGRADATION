@@ -85,7 +85,7 @@ int main(){
                 m[1][0] = j+vinicial*tvuelta;
                 m[1][1] = 1;
                 //Calculo el término independiente:
-                posiciondef[j-1] = posicion[j-1] + vinicial*(vueltas*tvuelta+j);
+                posiciondef[j-1] = 0 + vinicial*(vueltas*tvuelta+j);
                 posiciondef[j] = posicion[j] + vinicial*(vueltas*tvuelta+j);
                 //Calculo la solución:
                 calcularInversa2x2(m, mAux, mAux2);

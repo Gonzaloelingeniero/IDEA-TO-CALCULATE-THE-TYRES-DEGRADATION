@@ -86,7 +86,7 @@ int main(){
                 m[1][0] = 1;
                 m[1][1] = 1;
                 //Calculo el término independiente:
-                posiciondef[j-1] = posicion[j-1] + vinicial*(0.001);
+                posiciondef[j-1] = 0 + vinicial*(0.001);
                 posiciondef[j] = posicion[j] + vinicial*(1);
                 //Calculo la solución:
                 calcularInversa2x2(m, mAux, mAux2);
@@ -97,7 +97,7 @@ int main(){
                     sumatoriocurva = sumatoriocurva*(-1);
                 }
                 //Calculo la aceleración: .
-                printf("Aceleracion longiudinal acumulada:%f\n", sumatoriocurva);
+                printf("Aceleracion longiudinal acumulada:%.25f\n", sumatoriocurva);
                 //Calculo el radio de la curva por el teorema del seno para un triangulo isosceles, donde el radio de la curva es la base:
                 radio = sin(steerangle)*(posicion[j]- posicion[j-1])/sin(180-2*steerangle);
                 sumatoriolateral = sumatoriolateral + (2*posDef[j-1])*(2*posDef[j-1])/radio;
@@ -105,7 +105,7 @@ int main(){
                     sumatoriolateral = sumatoriolateral*(-1);
                 }
                 //Muestro la aceleración lateral:
-                printf("Sumatorio aceleracion lateral acumulada:%f\n", sumatoriolateral);
+                printf("Sumatorio aceleracion lateral acumulada:%.25f\n", sumatoriolateral);
                 //Pido la masa:
                 printf("Escribe la masa del coche: ");
                 scanf("%f", &masa);
